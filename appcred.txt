@@ -1,0 +1,8 @@
+key store path:
+C:\Users\Lloric Garcia\AndroidStudioProjects\Attentadance Monitoring\attndcemntoring.jks
+password:
+kjigjhgj
+allias:
+attendance monitoring
+password:
+sgsgsdgsdg
