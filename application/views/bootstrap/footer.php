@@ -30,3 +30,4 @@
 </script>	
 </body>
 </html>
+<!-- <?php echo CI_VERSION; ?> -->

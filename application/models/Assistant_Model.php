@@ -130,6 +130,7 @@ class Assistant_Model extends MY_Model {
     }
 
     public function signInApplication() {
+        $this->load->helper('date');
         $response = array();
         $email = $this->input->post('email');
         $fullname = $this->input->post('fullname');
@@ -144,7 +145,7 @@ class Assistant_Model extends MY_Model {
                     'assistant_fullname' => $fullname,
                 ));
                 $response['error'] = FALSE;
-                $response['currentTime'] = $this->my_current_datetime_information();
+                $response['currentTime'] = my_current_datetime_information();
                 $response['assistant_id'] = $assistant['id'];
                 $response['message'] = ($this->db->affected_rows()) ? 'Succesfully Sign In.' : 'Fetching Assistant info done.';
             } else {

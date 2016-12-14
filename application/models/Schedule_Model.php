@@ -6,6 +6,7 @@ class Schedule_Model extends MY_Model {
 
     function __construct() {
         parent::__construct();
+        $this->load->helper(array('day','date'));
     }
 
     private function addSchedule() {
@@ -90,7 +91,7 @@ class Schedule_Model extends MY_Model {
         if (!$this->form_validation->run()) {
             $this->load->model(array('Teacher_Model', 'Course_Model', 'Subject_Model'));
 
-
+            $this->load->helper(array('combobox', 'day'));
             $my_form = array(
                 'caption' => 'Add Schedule',
                 'action' => '',
@@ -108,13 +109,13 @@ class Schedule_Model extends MY_Model {
                             'title' => 'Start Time',
                             'type' => 'combo',
                             'value' => NULL,
-                            'combo_value' => $this->my_time_for_combo(),
+                            'combo_value' => my_time_for_combo(),
                         ),
                         'endtime' => array(
                             'title' => 'End Time',
                             'type' => 'combo',
                             'value' => NULL,
-                            'combo_value' => $this->my_time_for_combo(),
+                            'combo_value' => my_time_for_combo(),
                         ),
                         'room' => array(
                             'title' => 'Room',
@@ -125,7 +126,7 @@ class Schedule_Model extends MY_Model {
                             'title' => 'Day',
                             'type' => 'checkbox',
                             'value' => NULL,
-                            'checkbox_value' => $this->my_day_array(),
+                            'checkbox_value' => my_day_array(),
                         ),
                     )
                 ),
@@ -156,13 +157,13 @@ class Schedule_Model extends MY_Model {
                             'title' => 'Schedule School Year',
                             'type' => 'combo',
                             'value' => NULL,
-                            'combo_value' => $this->my_schoolyear_for_combo(),
+                            'combo_value' => my_schoolyear_for_combo(),
                         ),
                         'semester' => array(
                             'title' => 'Semester',
                             'type' => 'combo',
                             'value' => NULL,
-                            'combo_value' => $this->my_semester_for_combo(),
+                            'combo_value' => my_semester_for_combo(),
                         ),
                     )
                 ),
@@ -196,7 +197,7 @@ class Schedule_Model extends MY_Model {
                 $dw = 0;
             } else {
                 // $dw = date("w", date('y-m-d')) - 4;
-                $dw = $this->my_current_day();
+                $dw = my_day();
             }
             $str = '';
             switch ($dw) {
@@ -296,7 +297,7 @@ class Schedule_Model extends MY_Model {
         $status = '';
         $this->db->select('*');
         $this->db->where('schedule_id', $schedule_id);
-        $this->db->where('attendance_date', $this->my_datetime_format());
+        $this->db->where('attendance_date', my_datetime_format());
         $rs = $this->db->get('attendance');
         if ($rs->row()) {
             $row = $rs->row();
@@ -339,12 +340,12 @@ class Schedule_Model extends MY_Model {
             $row = $rs->row();
             $data = array(
                 'schedule_id' => $schedule_id,
-                'attendance_date' => $this->my_datetime_format(),
+                'attendance_date' => my_datetime_format(),
                 'attendance_date_timestap' => time(),
                 'teacher_id' => $row->teacher_id,
                 'attendance_status' => $status,
                 'assistant_id' => $assistant_id,
-                'attendance_day' => $this->my_current_day(),
+                'attendance_day' => my_day(),
             );
             if ($row = $this->check_if_alredy_recorded($data)) {
                 $this->load->model('Assistant_Model');
@@ -378,6 +379,7 @@ class Schedule_Model extends MY_Model {
         $schedules = $this->getAllSchedule(FALSE);
         $attendance = $this->attendance();
         if ($attendance) {
+            $this->load->helper('date');
             $data = array();
             $this->load->model('Assistant_Model');
             $inc = 1;
@@ -394,7 +396,7 @@ class Schedule_Model extends MY_Model {
                 $assistant = $this->Assistant_Model->getSingleData($value['assistant_id'], NULL);
                 array_push($data, array(
                     'inc' => $inc++,
-                    'date' => $this->my_converter_datetime_format($value['timestamp'], 'date'),
+                    'date' => my_converter_datetime_format($value['timestamp'], 'date'),
                     'day' => $value['day'],
                     'status' => $value['status'],
                     'teacher' => $single_schedule['teacher'],
@@ -402,7 +404,7 @@ class Schedule_Model extends MY_Model {
                     'in' => $single_schedule['start_time'],
                     'out' => $single_schedule['end_time'],
                     'assistant' => $assistant['fullname'],
-                    'time_recorded' => $this->my_converter_datetime_format($value['timestamp'], 'time'),
+                    'time_recorded' => my_converter_datetime_format($value['timestamp'], 'time'),
                 ));
             }
             return $data;

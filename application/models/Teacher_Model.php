@@ -6,6 +6,7 @@ class Teacher_Model extends MY_Model {
 
     function __construct() {
         parent::__construct();
+        $this->load->helper(array('date'));
     }
 
     public function addTeacher() {
@@ -137,7 +138,7 @@ class Teacher_Model extends MY_Model {
         //email exist
         if ($this->db->where('teacher_email', $email)->count_all_results('teacher')) {
             $response['error'] = FALSE;
-            $response['currentTime'] = $this->my_current_datetime_information();
+            $response['currentTime'] = my_current_datetime_information();
             $response['message'] = 'Fetching Teacher info done.';
         } else {
             $response['error'] = TRUE;
