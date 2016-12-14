@@ -8,6 +8,11 @@ class Api_web extends MY_Controller {
         parent::__construct();
     }
 
+    public function report($t_id, $M, $y) {
+        $this->load->model('Schedule_Model');
+        $this->my_json_view($this->Schedule_Model->report_table($t_id, $M, $y));
+    }
+
     public function assistants() {
         $this->load->model('Assistant_Model');
         $this->my_json_view($this->Assistant_Model->getAllAssistant());

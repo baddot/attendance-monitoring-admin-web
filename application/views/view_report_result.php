@@ -6,6 +6,7 @@
             <div class="panel-body">
                 <p> <?php echo print_r($data); ?></p>
                 <p> <?php echo print_r($data2); ?></p>
+                <p> <?php echo print_r($data3); ?></p>
             </div>
 
         </div>

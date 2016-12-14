@@ -6,7 +6,63 @@ class Schedule_Model extends MY_Model {
 
     function __construct() {
         parent::__construct();
-        $this->load->helper(array('day','date'));
+        $this->load->helper(array('day', 'date'));
+    }
+
+    public function report_table($t_id, $M, $y) {
+
+        $this->load->helper('day');
+
+        $this->db->select('*');
+        $this->db->where('teacher_id', $t_id);
+        $this->db->like('attendance_date', $y . ':' . $M);
+        $rs = $this->db->get('attendance');
+
+        $days = working_weekdays_in_month($M, $y);
+        $days_have = array();
+        $days_none = array();
+        if ($rs) {
+            foreach ($rs->result() as $row) {
+                // $days_present[] = ;
+
+                list($y, $m, $d) = explode(':', $row->attendance_date);
+
+                if (in_array($d, $days)) {
+                    $days_have[] = $d . '|' . $row->attendance_status;
+                }
+            }
+        }
+        $report = array();
+        foreach ($days as $v) {
+            foreach ($days_have as $v2) {
+                list($d, $status) = explode('|', $v2);
+                if ($d == $v) {
+                    $report[] = $v . '|' . $status;
+                    break;
+                }
+            }
+            $report[] = $v . '|none';
+        }
+
+//        $this->load->view('view_report_result', array(
+//            //  'data' => '[' . $this->db->last_query() . ']'
+//            'data' => $days,
+//            'data2' => $days_have,
+//            'data3' => $report
+//        ));
+
+
+        $response = array();
+        $inc = 1;
+        foreach ($report as $v) {
+            list($d, $status) = explode('|', $v);
+            $tmp["inc"] = $inc++;
+            $tmp["date"] = $d;
+            $tmp["status"] = $status;
+            array_push($response, $tmp);
+        }
+
+        return $response;
     }
 
     private function addSchedule() {

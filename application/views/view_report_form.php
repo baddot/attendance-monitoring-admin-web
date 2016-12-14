@@ -19,7 +19,7 @@
                     </div>
                     <div class="form-group">
                         <?php
-                        echo form_dropdown('year', year_combo(2015, 2020), set_value('month'), array(
+                        echo form_dropdown('year', year_combo(2015, 2020), set_value('year'), array(
                             'class' => 'form-control'
                         ));
                         ?>
