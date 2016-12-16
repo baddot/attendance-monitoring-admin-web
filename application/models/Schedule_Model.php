@@ -9,7 +9,25 @@ class Schedule_Model extends MY_Model {
         $this->load->helper(array('day', 'date'));
     }
 
+    public function total($t_id, $M, $y) {
+        $this->db->select('*');
+        $this->db->where('teacher_id', $t_id);
+        $this->db->like('attendance_date', $y . ':' . $M);
+        $rs = $this->db->get('attendance');
+        $tmp = 0;
+        if ($rs) {
+            foreach ($rs->result() as $row) {
+                if ($row->attendance_status == 'present') {
+                    $tmp++;
+                }
+            }
+        }
+        return $tmp;
+    }
+
     public function report_table($t_id, $M, $y) {
+
+
 
         $this->load->helper('day');
 
@@ -34,14 +52,19 @@ class Schedule_Model extends MY_Model {
         }
         $report = array();
         foreach ($days as $v) {
+            $found = FALSE;
             foreach ($days_have as $v2) {
                 list($d, $status) = explode('|', $v2);
                 if ($d == $v) {
                     $report[] = $v . '|' . $status;
+
+                    $found = TRUE;
                     break;
                 }
             }
-            $report[] = $v . '|none';
+            if (!$found) {
+                $report[] = $v . '|---';
+            }
         }
 
 //        $this->load->view('view_report_result', array(

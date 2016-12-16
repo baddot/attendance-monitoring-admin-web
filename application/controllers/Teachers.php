@@ -58,15 +58,40 @@ Class Teachers extends MY_Controller {
     }
 
     private function generate_report($t_id, $M, $y) {
-           
-                    
-       // $this->my_header_view();
-        $this->my_table_view('Report','report/'.$t_id.'/'.$M.'/'.$y.'/', array(
-            'inc'=>'#',
-            'date'=>'Date',
-            'status'=>'Status',
+
+        $this->load->model('Schedule_Model');
+
+        $this->load->helper('month');
+        $data = array();
+        $data['month'] = my_month_array($M);
+        $data['year'] = $y;
+        $this->load->view('info', $data);
+
+        // $this->my_header_view();
+        $this->my_table_view('Report', 'report/' . $t_id . '/' . $M . '/' . $y . '/', array(
+            'inc' => '#',
+            'date' => 'Date',
+            'status' => 'Status',
         ));
-       // $this->load->view('bootstrap/footer');
+        // $this->load->view('bootstrap/footer');
+
+
+        $this->db->select('*');
+        $this->db->where('teacher_id', $t_id);
+        $rs = $this->db->get('teacher');
+        $f = '';
+        if ($rs) {
+            $row = $rs->row();
+            $f = $row->teacher_fullname;
+        }
+        $data = array();
+        $data['fullname'] = $f;
+        $tot = $this->Schedule_Model->total($t_id, $M, $y);
+        $data['total'] = $tot;
+        $this->load->helper('day');
+        $days = working_weekdays_in_month($M, $y);
+        $data['totalabsent'] = sizeof($days) - $tot;
+        $this->load->view('total', $data);
     }
 
     public function scheduletoday($t_id = NULL) {
