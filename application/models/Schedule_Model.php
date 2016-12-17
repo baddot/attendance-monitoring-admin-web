@@ -14,14 +14,20 @@ class Schedule_Model extends MY_Model {
         $this->db->where('teacher_id', $t_id);
         $this->db->like('attendance_date', $y . ':' . $M);
         $rs = $this->db->get('attendance');
-        $tmp = 0;
+
+        $p = 0;
+        $a = 0;
         if ($rs) {
             foreach ($rs->result() as $row) {
                 if ($row->attendance_status == 'present') {
-                    $tmp++;
+                    $p++;
+                } else if ($row->attendance_status == 'absent') {
+                    $a++;
                 }
             }
         }
+        $tmp['absent'] = $a;
+        $tmp['present'] = $p;
         return $tmp;
     }
 

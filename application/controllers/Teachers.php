@@ -44,8 +44,13 @@ Class Teachers extends MY_Controller {
         );
 
 
-        if ($this->form_validation->run()) {
+        if ($this->form_validation->run() and ! is_null($this->input->post('btn'))) {
             $this->generate_report($t_id, $this->input->post('month'), $this->input->post('year'));
+        }
+        if ($this->form_validation->run() and ! is_null($this->input->post('btn2'))) {
+
+
+            $this->export($t_id, $this->input->post('month'), $this->input->post('year'));
         }
 
         $this->load->view('view_report_form', array(
@@ -55,6 +60,10 @@ Class Teachers extends MY_Controller {
 
 
         $this->load->view('bootstrap/footer');
+    }
+
+    private function data($t_id, $M, $y) {
+        
     }
 
     private function generate_report($t_id, $M, $y) {
@@ -87,11 +96,32 @@ Class Teachers extends MY_Controller {
         $data = array();
         $data['fullname'] = $f;
         $tot = $this->Schedule_Model->total($t_id, $M, $y);
-        $data['total'] = $tot;
+        $data['total'] = $tot['present'];
         $this->load->helper('day');
         $days = working_weekdays_in_month($M, $y);
-        $data['totalabsent'] = sizeof($days) - $tot;
+        $data['totalabsent'] = $tot['absent'];
         $this->load->view('total', $data);
+        //   $this->export();
+    }
+
+    public function export($t_id, $M, $y) {
+
+        $this->load->model('Schedule_Model');
+        $array_data = $this->Schedule_Model->report_table($t_id, $M, $y);
+
+        $titles = array(
+            '#', 'Date', 'Status'
+        );
+        $arraaaay = array();
+        foreach ($array_data as $k => $v) {
+            $arraaaay[] = array($v['inc'], $v['date'], $v['status']);
+        }
+        $array = array();
+        for ($i = 0; $i <= 100; $i++) {
+            $array[] = array($i, $i + 1, $i + 2);
+        }
+        $this->load->library('excel'); //echo print_r($array);
+        $this->excel->make_from_array($titles, $arraaaay);
     }
 
     public function scheduletoday($t_id = NULL) {
