@@ -29,17 +29,17 @@ function my_day_array() {
 
 function days($row) {
     $d = array(
-        'm' => 'M',
-        't' => 'T',
-        'w' => 'W',
-        'th' => 'TH',
-        'f' => 'F',
-        's' => 'Sat',
-        'su' => 'Sun',
+        'monday' => 'M',
+        'tuesday' => 'T',
+        'wednesday' => 'W',
+        'thursday' => 'TH',
+        'friday' => 'F',
+        'saturday' => 'Sat',
+        'sunday' => 'Sun',
     );
     $days = '';
     foreach ($d AS $k => $v) {
-        $tmp = 'schedule_' . $k;
+        $tmp = 'schedule_day_' . $k;
         if ($row->$tmp) {
             $days .= $v;
         }

@@ -115,20 +115,26 @@ Class Teachers extends MY_Controller {
         $M = $this->input->get('month');
         $y = $this->input->get('year');
         $this->load->model('Schedule_Model');
-        $array_data = $this->Schedule_Model->report_table($t_id, $M, $y);
+        $array_data = $this->Schedule_Model->report_export($t_id, $M, $y);
 
         $titles = array(
-            '#', 'Date', 'Status'
+            '#', 'Date', 'Day', 'Status', 'Subject', 'In', 'Out', 'Recorded by Assistant', 'Approved by Teacher', 'Time Recorded',
         );
         $arraaaay = array();
         foreach ($array_data as $k => $v) {
-            $arraaaay[] = array($v['inc'], $v['date'], $v['status']);
+            $arraaaay[] = array(
+                $v['inc'], $v['date'], $v['day'],
+                $v['status'], $v['subject'], $v['in'],
+                $v['out'], $v['recorded_by'],$v['approve_by'], $v['recorded_time']
+            );
         }
         $array = array();
         for ($i = 0; $i <= 100; $i++) {
             $array[] = array($i, $i + 1, $i + 2);
         }
         $this->load->library('excel'); //echo print_r($array);
+        $teacher_row = $this->db->select('*')->where('teacher_id', $t_id)->get('teacher')->row();
+        $this->excel->filename = str_replace(' ', '_', $teacher_row->teacher_fullname . ' ' . $M . ' ' . $y).'_attendance';
         $this->excel->make_from_array($titles, $arraaaay);
     }
 

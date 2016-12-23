@@ -9,6 +9,27 @@ class Schedule_Model extends MY_Model {
         $this->load->helper(array('day', 'date'));
     }
 
+    public function approval() {
+        $response = array();
+        $schedule_id = $this->input->post('schedule_id');
+        $approval = $this->input->post('approval');
+
+        $this->db->update('attendance', array(
+            'attendance_approve' => ($approval == 'approve') ? TRUE : FALSE
+        ));
+
+        if ($this->db->affected_rows()) {
+            $response['error'] = FALSE;
+            $response['message'] = 'done!';
+        } else {
+            $response['error'] = TRUE;
+            $response['message'] = 'failed!';
+        }
+        $this->load->view('api', array(
+            'msg' => json_encode($response),
+        ));
+    }
+
     public function total($t_id, $M, $y) {
         $this->db->select('*');
         $this->db->where('teacher_id', $t_id);
@@ -92,6 +113,104 @@ class Schedule_Model extends MY_Model {
         }
 
         return $response;
+    }
+
+    public function report_export($t_id, $M, $y) {
+
+
+
+        $this->load->helper('day');
+
+        $this->db->select('*');
+        $this->db->where('teacher_id', $t_id);
+        $this->db->like('attendance_date', $y . ':' . $M);
+        $rs = $this->db->get('attendance');
+
+        $days = working_weekdays_in_month($M, $y);
+        $days_have = array();
+        //  $days_none = array();
+        $attendance = array();
+        if ($rs) {
+            foreach ($rs->result() as $row) {
+                // $days_present[] = ;
+
+                list($y, $m, $d) = explode(':', $row->attendance_date);
+
+                if (in_array($d, $days)) {
+                    $days_have[] = $d . '|' . $row->attendance_status;
+                    $attendance[] = $row;
+                }
+            }
+        }
+        $report = array();
+        foreach ($days as $v) {
+            $found = FALSE;
+            foreach ($attendance as $v2) {
+                //  list($d, $status) = explode('|', $v2);
+                list($y, $m, $d) = explode(':', $v2->attendance_date);
+                if ($d == $v) {
+                    // $report[] = $v . '|' . $status;
+                    $report[] = $v2;
+                    // $found = TRUE;
+                    break;
+                }
+            }
+//            if (!$found) {
+//                $report[] = $v . '|---';
+//            }
+        }
+
+//        $this->load->view('view_report_result', array(
+//            //  'data' => '[' . $this->db->last_query() . ']'
+//            'data' => $days,
+//            'data2' => $days_have,
+//            'data3' => $report
+//        ));
+
+
+        $response = array();
+        $inc = 1;
+        foreach ($report as $v) {
+
+            $sched_row = $this->db->select('*')->where('schedule_id', $v->schedule_id)->get('schedule')->row();
+            $subject_row = $this->db->select('*')->where('subject_id', $sched_row->subject_id)->get('subject')->row();
+            $row_assistant = $this->db->select('*')->where('assistant_id', $v->assistant_id)->get('assistant')->row();
+
+            $tmp["inc"] = $inc++;
+            $tmp["date"] = format_date_to_string($v->attendance_date);
+            $tmp["day"] = days($sched_row);
+            $tmp["status"] = $v->attendance_status;
+            $tmp["subject"] = $subject_row->subject_code . ' - ' . $subject_row->subject_desc;
+            $tmp["in"] = $this->_24_to_12($sched_row->schedule_start_time);
+            $tmp["out"] = $this->_24_to_12($sched_row->schedule_end_time);
+            $tmp["recorded_by"] = $row_assistant->assistant_fullname;
+            $tmp["approve_by"] = ($v->attendance_approve) ? 'Approved' : 'Not Approved';
+            $tmp["recorded_time"] = my_converter_datetime_format($v->attendance_date_timestap, 'time');
+            array_push($response, $tmp);
+        }
+
+        return $response;
+    }
+
+//24 to 12hr
+    private function _24_to_12($t24) {
+        $t = array(
+            '06:00:00' => '6:00 am',
+            '07:00:00' => '7:00 am',
+            '08:00:00' => '8:00 am',
+            '09:00:00' => '9:00 am',
+            '10:00:00' => '10:00 am',
+            '11:00:00' => '11:00 am',
+            '12:00:00' => '12:00 pm',
+            '13:00:00' => '1:00 pm',
+            '14:00:00' => '2:00 pm',
+            '15:00:00' => '3:00 pm',
+            '16:00:00' => '4:00 pm',
+            '17:00:00' => '5:00 pm',
+            '18:00:00' => '6:00 pm',
+            '19:00:00' => '7:00 pm'
+        );
+        return $t[$t24];
     }
 
     private function addSchedule() {
@@ -341,6 +460,8 @@ class Schedule_Model extends MY_Model {
                 }
                 if ($ismobile) {
                     $tmp['status'] = $this->status($row->schedule_id);
+
+                    $tmp['approve'] = $this->approve($row->schedule_id) ? 'Approved' : 'Not Approve';
                 } else
                     $tmp['inc'] = $inc++;
                 $tmp['id'] = $row->schedule_id;
@@ -391,6 +512,24 @@ class Schedule_Model extends MY_Model {
             $status = 'no record.';
         }
         return $status;
+    }
+
+    /**
+     * present or abdsent to list in assistant activity APP 
+     */
+    private function approve($schedule_id) {
+        $approve = FALSE;
+        $this->db->select('*');
+        $this->db->where('schedule_id', $schedule_id);
+        $this->db->where('attendance_date', my_datetime_format());
+        $rs = $this->db->get('attendance');
+        if ($rs->row()) {
+            $row = $rs->row();
+            $approve = $row->attendance_approve;
+        } else {
+            $status = 'no record.';
+        }
+        return $approve;
     }
 
     public function getAllSchedulesMobile($teacher_email) {
@@ -488,7 +627,8 @@ class Schedule_Model extends MY_Model {
                     'subject' => $single_schedule['subject_desc'],
                     'in' => $single_schedule['start_time'],
                     'out' => $single_schedule['end_time'],
-                    'assistant' => $assistant['fullname'],
+                    'assistant' => $assistant ['fullname'],
+                    'approve' => ( $value['approve']) ? 'Approved' : 'Not Approved',
                     'time_recorded' => my_converter_datetime_format($value['timestamp'], 'time'),
                 ));
             }
@@ -515,6 +655,7 @@ class Schedule_Model extends MY_Model {
                     'schedule_id' => $row->schedule_id,
                     'assistant_id' => $row->assistant_id,
                     'day' => $row->attendance_day,
+                    'approve' => $row->attendance_approve,
                 ));
             }
             return $data;

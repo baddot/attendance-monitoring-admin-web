@@ -8,6 +8,13 @@ class Api extends CI_Controller {
         parent::__construct();
     }
 
+    public function approval() {
+        $this->load->model('Schedule_Model');
+        $this->load->view('api', array(
+            'msg' => json_encode($this->Schedule_Model->approval()),
+        ));
+    }
+
     public function signinassistant() {
         $this->load->model('Assistant_Model');
         $this->Assistant_Model->signInApplication();

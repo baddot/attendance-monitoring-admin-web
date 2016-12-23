@@ -20,6 +20,7 @@ class Attendance extends MY_Controller {
             'in' => 'In',
             'out' => 'Out',
             'assistant' => 'Recorded by',
+            'approve' => 'Approved by Teacher',
             'time_recorded' => 'Time Recorded',
         ));
         $this->load->view('bootstrap/footer');
