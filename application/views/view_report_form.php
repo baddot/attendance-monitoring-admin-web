@@ -29,10 +29,6 @@
                         echo form_submit('btn', 'View Report', array(
                             'class' => 'btn btn-primary'
                         ));
-                        ?><?php
-                        echo form_submit('btn2', 'Export Excel Report', array(
-                            'class' => 'btn btn-primary'
-                        ));
                         ?>
                     </div>
                 </div>

@@ -58,6 +58,11 @@ Class Teachers extends MY_Controller {
         ));
 
 
+        $this->load->view('export_view', array(
+            't_id' => $t_id
+        ));
+
+
 
         $this->load->view('bootstrap/footer');
     }
@@ -104,8 +109,11 @@ Class Teachers extends MY_Controller {
         //   $this->export();
     }
 
-    public function export($t_id, $M, $y) {
-
+    //  public function export($t_id, $M, $y) {
+    public function export() {
+        $t_id = $this->input->get('t_id');
+        $M = $this->input->get('month');
+        $y = $this->input->get('year');
         $this->load->model('Schedule_Model');
         $array_data = $this->Schedule_Model->report_table($t_id, $M, $y);
 
