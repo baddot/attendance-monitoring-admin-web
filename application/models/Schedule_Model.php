@@ -125,7 +125,7 @@ class Schedule_Model extends MY_Model {
         $rs = $this->db->get('attendance');
 
         $days = working_weekdays_in_month($M, $y);
-        $days_have = array();
+       // $days_have = array();
         $attendance = array();
         if ($rs) {
             foreach ($rs->result() as $row) {
@@ -139,6 +139,8 @@ class Schedule_Model extends MY_Model {
                 }
             }
         }
+       // echo print_r($days_have);
+       // echo print_r($attendance);
         $report = array();
         foreach ($days as $v) {
             $found = FALSE;
@@ -154,9 +156,11 @@ class Schedule_Model extends MY_Model {
             }
         }
 
+      //  echo print_r($report);
         $response = array();
         $inc = 1;
-        foreach ($report as $v) {
+        //foreach ($report as $v) {
+        foreach ($attendance as $v) {
 
             $sched_row = $this->db->select('*')->where('schedule_id', $v->schedule_id)->get('schedule')->row();
             $subject_row = $this->db->select('*')->where('subject_id', $sched_row->subject_id)->get('subject')->row();

@@ -10,7 +10,7 @@ class Api_web extends MY_Controller {
 
     public function report($t_id, $M, $y) {
         $this->load->model('Schedule_Model');
-        $this->my_json_view($this->Schedule_Model->report_table($t_id, $M, $y));
+        $this->my_json_view($this->Schedule_Model->report_export($t_id, $M, $y));
     }
 
     public function assistants() {

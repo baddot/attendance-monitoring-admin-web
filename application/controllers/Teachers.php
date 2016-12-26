@@ -85,7 +85,14 @@ Class Teachers extends MY_Controller {
         $this->my_table_view('Report', 'report/' . $t_id . '/' . $M . '/' . $y . '/', array(
             'inc' => '#',
             'date' => 'Date',
+            'day' => 'Day',
             'status' => 'Status',
+            'subject' => 'Subject',
+            'in' => 'In',
+            'out' => 'Out',
+            'recorded_by' => 'Recorded By',
+            'approve_by' => 'Approved By',
+            'recorded_time' => 'Recorded Time'
         ));
         // $this->load->view('bootstrap/footer');
 
