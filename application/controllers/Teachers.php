@@ -125,7 +125,7 @@ Class Teachers extends MY_Controller {
             $arraaaay[] = array(
                 $v['inc'], $v['date'], $v['day'],
                 $v['status'], $v['subject'], $v['in'],
-                $v['out'], $v['recorded_by'],$v['approve_by'], $v['recorded_time']
+                $v['out'], $v['recorded_by'], $v['approve_by'], $v['recorded_time']
             );
         }
         $array = array();
@@ -134,7 +134,9 @@ Class Teachers extends MY_Controller {
         }
         $this->load->library('excel'); //echo print_r($array);
         $teacher_row = $this->db->select('*')->where('teacher_id', $t_id)->get('teacher')->row();
-        $this->excel->filename = str_replace(' ', '_', $teacher_row->teacher_fullname . ' ' . $M . ' ' . $y).'_attendance';
+        $this->load->helper('month');
+        $this->excel->filename = str_replace(' ', '_', $teacher_row->teacher_fullname . ' ' . my_month_array($M) . ' ' . $y) . '_attendance';
+        $this->excel->title_inside = array($teacher_row->teacher_school_id, $teacher_row->teacher_fullname, $teacher_row->teacher_email, my_month_array($M) . ' ' . $y);
         $this->excel->make_from_array($titles, $arraaaay);
     }
 

@@ -156,7 +156,7 @@ $sub_label = html_escape(((isset($menu_items[$menu_current]['label'])) ? '' : $m
                     </li>
                     <?php
                     echo (ENVIRONMENT === 'development') ?
-                            '<li>[rendered <strong>{elapsed_time}</strong> ver. <strong>'
+                            '<li>[rendered <strong>{elapsed_time} - {memory_usage}</strong> ver. <strong>'
                             . CI_VERSION
                             . '</strong>]</li>' : ''
                     ?>

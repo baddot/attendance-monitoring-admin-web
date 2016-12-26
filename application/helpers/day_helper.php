@@ -72,9 +72,11 @@ function working_weekdays_in_month($M, $Y) {
         $get_name = date('l', strtotime($date)); //get week day
         $day_name = substr($get_name, 0, 3); // Trim day name to 3 chars
         //if not a weekend add day to array
-        if ($day_name != 'Sun' && $day_name != 'Sat') {
+      
+        
+        //if ($day_name != 'Sun' && $day_name != 'Sat') {
             $workdays[] = $i;
-        }
+       // }
     }
 
 // look at items in the array uncomment the next line

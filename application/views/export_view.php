@@ -2,7 +2,7 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
-            <div class="panel-heading">exprt</div>
+            <div class="panel-heading">Export</div>
             <div class="panel-body">
                 <?php echo validation_errors(); ?>
                 <?php echo form_open(base_url('teachers/export/' . $t_id), array('role'=>"form",'method'=>'get')); ?>

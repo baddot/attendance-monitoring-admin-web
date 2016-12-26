@@ -4,6 +4,7 @@ class Excel {
 
 	public $filename 		= 'excel-doc';
 	public $custom_titles;
+        public $title_inside;
 
 	public function make_from_db($db_results) {
 		$data 		= NULL;
@@ -68,8 +69,8 @@ class Excel {
 
 	private function generate($headers, $data) {
 		$this->set_headers();
-
-		echo "$headers\n$data";
+                $tmp = $this->titles($this->title_inside);
+		echo "$tmp\n\n$headers\n$data";
 	}
 
 	public function titles($titles) {
