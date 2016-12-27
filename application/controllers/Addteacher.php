@@ -11,7 +11,7 @@ class Addteacher extends MY_Controller {
     public function index() {
         $this->my_header_view();
         $this->load->model('Teacher_Model');
-        $this->Teacher_Model->add();
+        $this->Teacher_Model->form();
         $this->load->view('bootstrap/footer');
     }
 

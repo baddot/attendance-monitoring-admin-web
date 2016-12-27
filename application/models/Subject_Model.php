@@ -4,13 +4,15 @@ defined('BASEPATH') or exit('no direct script allowed');
 
 class Subject_Model extends MY_Model {
 
+    const DB_TABLE = 'subject';
+
     function __construct() {
         parent::__construct();
     }
 
     public function getSubjectForCombo() {
         $this->db->select('subject_id,subject_desc');
-        $rs = $this->db->get('subject');
+        $rs = $this->db->get(self::DB_TABLE);
         $data = array();
         foreach ($rs->result() as $val) {
             $data[$val->subject_id] = $val->subject_desc;
@@ -18,20 +20,36 @@ class Subject_Model extends MY_Model {
         return $data;
     }
 
-    public function addSubject() {
+    private function update($subject_id) {
+        $data = array(
+            'subject_code' => $this->input->post('code'),
+            'subject_desc' => $this->input->post('desc'),
+            'subject_unit' => $this->input->post('unit'),
+                // 'admin_id' => $this->session->userdata('admin_id'),
+        );
+        $this->db->where('subject_id', $subject_id);
+        $this->db->update(self::DB_TABLE, $data);
+        return $this->db->affected_rows();
+    }
+
+    private function addSubject() {
         $data = array(
             'subject_code' => $this->input->post('code'),
             'subject_desc' => $this->input->post('desc'),
             'subject_unit' => $this->input->post('unit'),
             'admin_id' => $this->session->userdata('admin_id'),
         );
-        $this->db->insert('subject', $data);
+        $this->db->insert(self::DB_TABLE, $data);
         log_message('debug', $this->db->last_query());
         return $this->db->affected_rows();
     }
 
-    public function add() {
-
+    public function form($subject_id = NULL) {
+        $subject_object = NULL;
+        if (!is_null($subject_id)) {
+            $subject_object_array = $this->get($subject_id);
+            $subject_object = $subject_object_array[0];
+        }
         $this->load->helper('form');
         $this->load->library('form_validation');
 
@@ -59,10 +77,10 @@ class Subject_Model extends MY_Model {
 
 
             $my_form = array(
-                'caption' => 'Add Subject',
+                'caption' => (is_null($subject_object) ? 'Add Subject' : 'Update Subject'),
                 'action' => '',
                 'button_name' => 'save',
-                'button_title' => 'Add Subject',
+                'button_title' => (is_null($subject_object) ? 'Add Subject' : 'Update Subject'),
             );
 
             $my_inputs = array(
@@ -74,17 +92,17 @@ class Subject_Model extends MY_Model {
                         'code' => array(
                             'title' => 'Subject Code',
                             'type' => 'text',
-                            'value' => NULL,
+                            'value' => $this->form_validation->set_value('code', (!is_null($subject_object)) ? $subject_object->code : NULL),
                         ),
                         'desc' => array(
                             'title' => 'Subject Description',
                             'type' => 'text',
-                            'value' => NULL,
+                            'value' => $this->form_validation->set_value('desc', (!is_null($subject_object)) ? $subject_object->desc : NULL),
                         ),
                         'unit' => array(
                             'title' => 'Subject Unit',
                             'type' => 'text',
-                            'value' => NULL,
+                            'value' => $this->form_validation->set_value('unit', (!is_null($subject_object)) ? $subject_object->unit : NULL),
                         ),
                     )
                 ),
@@ -95,25 +113,31 @@ class Subject_Model extends MY_Model {
                 'my_forms_inputs' => $my_inputs,
             ));
         } else {
-            $this->load->model('Subject_Model');
-            $this->load->view('done', array(
-                'msg' => ($this->Subject_Model->addSubject()) ? 'Subject, added successfully!' : 'Failed to add subject..'
-            ));
+
+            if (is_null($subject_object)) {
+                $this->load->view('done', array(
+                    'msg' => ($this->addSubject()) ? 'Subject, added successfully!' : 'Failed to add subject..'
+                ));
+            } else {
+                $this->load->view('done', array(
+                    'msg' => ($this->update($subject_object->id)) ? 'Subject, update successfully!' : 'Failed to update subject..'
+                ));
+            }
         }
     }
 
     public function getAllSubjects() {
         $data = array();
-        $subjects = $this->subjects();
-        if ($subjects) {
+        $subjects_obj = $this->get();
+        if ($subjects_obj) {
             $inc = 1;
-            foreach ($subjects as $value) {
+            foreach ($subjects_obj as $value) {
                 array_push($data, array(
                     'inc' => $inc++,
-                    'code' => $value['code'],
-                    'description' => $value['desc'],
-                    'unit' => $value['unit'],
-                    'option' => anchor(base_url('#'), 'update'),
+                    'code' => $value->code,
+                    'description' => $value->desc,
+                    'unit' => $value->unit,
+                    'option' => anchor(base_url('subjects/update/' . $value->id), 'update'),
                 ));
             }
             return $data;
@@ -121,23 +145,23 @@ class Subject_Model extends MY_Model {
         return FALSE;
     }
 
-    public function subjects($subject_id = NULL) {
+    public function get($subject_id = NULL) {
         $this->db->select('*');
         if (!is_null($subject_id)) {
             $this->db->where('subject_id', $subject_id);
         }
-        $rs = $this->db->get('subject');
+        $rs = $this->db->get(self::DB_TABLE);
         if ($rs->row()) {
             $data = array();
             foreach ($rs->result() as $row) {
-                array_push($data, array(
-                    'id' => $row->subject_id,
-                    'code' => $row->subject_code,
-                    'desc' => $row->subject_desc,
-                    'unit' => $row->subject_unit,
-                    'timeadded' => $row->subject_added_time,
-                    'admin_id' => $row->admin_id,
-                ));
+                $data[] = (object) array(
+                            'id' => $row->subject_id,
+                            'code' => $row->subject_code,
+                            'desc' => $row->subject_desc,
+                            'unit' => $row->subject_unit,
+                            'timeadded' => $row->subject_added_time,
+                            'admin_id' => $row->admin_id,
+                );
             }
             return $data;
         }

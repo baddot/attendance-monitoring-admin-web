@@ -4,6 +4,8 @@ defined('BASEPATH') or exit('no direct script allowed');
 
 class Schedule_Model extends MY_Model {
 
+    const DB_TABLE = 'schedule';
+
     function __construct() {
         parent::__construct();
         $this->load->helper(array('day', 'date'));
@@ -125,7 +127,7 @@ class Schedule_Model extends MY_Model {
         $rs = $this->db->get('attendance');
 
         $days = working_weekdays_in_month($M, $y);
-       // $days_have = array();
+        // $days_have = array();
         $attendance = array();
         if ($rs) {
             foreach ($rs->result() as $row) {
@@ -139,8 +141,8 @@ class Schedule_Model extends MY_Model {
                 }
             }
         }
-       // echo print_r($days_have);
-       // echo print_r($attendance);
+        // echo print_r($days_have);
+        // echo print_r($attendance);
         $report = array();
         foreach ($days as $v) {
             $found = FALSE;
@@ -156,7 +158,7 @@ class Schedule_Model extends MY_Model {
             }
         }
 
-      //  echo print_r($report);
+        //  echo print_r($report);
         $response = array();
         $inc = 1;
         //foreach ($report as $v) {
@@ -236,11 +238,18 @@ class Schedule_Model extends MY_Model {
             'schedule_semester' => $this->input->post('semester'),
             'admin_id' => $this->session->userdata('admin_id'),
         );
-        $this->db->insert('schedule', $data);
+        $this->db->insert(self::DB_TABLE, $data);
         return ($this->db->affected_rows()) ? 'Added successfully!' : 'Failed to add schedule..';
     }
 
-    public function add() {
+    public function form(/* $schedule_id = NULL */) {
+
+//        $schedule_object = NULL;
+//        if (!is_null($schedule_id)) {
+//            $schedule_object_array = $this->get($schedule_id);
+//            $schedule_object = $schedule_object_array[0];
+//        }
+
         $this->load->helper('form');
         $this->load->library('form_validation');
         $this->form_validation->set_rules(array(
@@ -316,6 +325,7 @@ class Schedule_Model extends MY_Model {
                         'starttime' => array(
                             'title' => 'Start Time',
                             'type' => 'combo',
+                            // 'value' => $this->form_validation->set_value('starttime', (!is_null($schedule_object)) ? $schedule_object->schoolid : NULL),
                             'value' => NULL,
                             'combo_value' => my_time_for_combo(),
                         ),
@@ -443,7 +453,7 @@ class Schedule_Model extends MY_Model {
         if (isset($teacher_email)) {
             $this->db->where('teacher.teacher_email', $teacher_email);
         }
-        $query = $this->db->get('schedule');
+        $query = $this->db->get(self::DB_TABLE);
 
         if ($query->num_rows() > 0) {
             $inc = 1;
@@ -492,8 +502,8 @@ class Schedule_Model extends MY_Model {
                 $tmp['year'] = $row->schedule_sy;
                 $tmp['unit'] = $row->subject_unit;
 
-                if (!$ismobile)
-                    $tmp['option'] = anchor(base_url(), 'edit');
+            //    if (!$ismobile)
+              //      $tmp['option'] = anchor(base_url(), 'edit');
                 array_push($response, $tmp);
             }
         }
@@ -559,7 +569,7 @@ class Schedule_Model extends MY_Model {
 
             $this->db->select('*');
             $this->db->where('schedule_id', $schedule_id);
-            $rs = $this->db->get('schedule');
+            $rs = $this->db->get(self::DB_TABLE);
             log_message('debug', $this->db->last_query());
             if (!$this->db->affected_rows()) {
                 $respone['error'] = TRUE;

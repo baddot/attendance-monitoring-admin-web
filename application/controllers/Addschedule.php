@@ -11,7 +11,7 @@ class Addschedule extends MY_Controller {
     public function index() {
         $this->my_header_view();
         $this->load->model('Schedule_Model');
-        $this->Schedule_Model->add();
+        $this->Schedule_Model->form();
         $this->load->view('bootstrap/footer');
     }
 

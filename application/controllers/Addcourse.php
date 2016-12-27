@@ -11,7 +11,7 @@ class Addcourse extends MY_Controller {
     public function index() {
         $this->my_header_view();
         $this->load->model('Course_Model');
-        $this->Course_Model->add();
+        $this->Course_Model->form();
         $this->load->view('bootstrap/footer');
     }
 

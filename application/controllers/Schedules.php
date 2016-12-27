@@ -23,7 +23,7 @@ class Schedules extends MY_Controller {
             'semester'=>'Semester',
             'year'=>'School Year',
             'unit'=>'Unit',
-            'option'=>'Option',
+          //  'option'=>'Option',
         ));
         $this->load->view('bootstrap/footer');
     }

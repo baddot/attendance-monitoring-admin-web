@@ -20,6 +20,16 @@ Class Teachers extends MY_Controller {
         $this->load->view('bootstrap/footer');
     }
 
+    public function update($teacher_id = NULL) {
+        if (is_null($teacher_id)) {
+            show_error('Invalid');
+        }
+        $this->my_header_view();
+        $this->load->model('Teacher_Model');
+        $this->Teacher_Model->form($teacher_id);
+        $this->load->view('bootstrap/footer');
+    }
+
     public function viewreport($t_id) {
         if (is_null($t_id)) {
             show_404();
@@ -67,9 +77,9 @@ Class Teachers extends MY_Controller {
         $this->load->view('bootstrap/footer');
     }
 
-    private function data($t_id, $M, $y) {
-        
-    }
+//    private function data($t_id, $M, $y) {
+//        
+//    }
 
     private function generate_report($t_id, $M, $y) {
 
