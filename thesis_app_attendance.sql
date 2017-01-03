@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.2
+-- version 4.0.10.14
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Dec 23, 2016 at 09:39 AM
--- Server version: 10.1.19-MariaDB
--- PHP Version: 5.6.24
+-- Host: localhost:3306
+-- Generation Time: Jan 03, 2017 at 09:09 PM
+-- Server version: 10.0.28-MariaDB
+-- PHP Version: 5.6.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -14,7 +14,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `thesis_app_attendance`
@@ -26,14 +26,15 @@ SET time_zone = "+00:00";
 -- Table structure for table `admin`
 --
 
-CREATE TABLE `admin` (
-  `admin_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `admin` (
+  `admin_id` int(11) NOT NULL AUTO_INCREMENT,
   `admin_fullname` varchar(20) NOT NULL,
   `admin_username` varchar(20) NOT NULL,
   `admin_password` varchar(1000) NOT NULL,
   `admin_status` tinyint(1) NOT NULL,
-  `admin_added_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `admin_added_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`admin_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `admin`
@@ -48,15 +49,17 @@ INSERT INTO `admin` (`admin_id`, `admin_fullname`, `admin_username`, `admin_pass
 -- Table structure for table `assistant`
 --
 
-CREATE TABLE `assistant` (
-  `assistant_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `assistant` (
+  `assistant_id` int(11) NOT NULL AUTO_INCREMENT,
   `assistant_fullname` varchar(50) DEFAULT NULL,
   `assistant_email` varchar(100) NOT NULL,
   `assistant_password` varchar(1000) DEFAULT NULL,
   `assistant_status` tinyint(1) NOT NULL DEFAULT '1',
   `assistant_added_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `admin_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `admin_id` int(11) NOT NULL,
+  PRIMARY KEY (`assistant_id`),
+  UNIQUE KEY `assistant_email` (`assistant_email`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
 
 --
 -- Dumping data for table `assistant`
@@ -76,25 +79,29 @@ INSERT INTO `assistant` (`assistant_id`, `assistant_fullname`, `assistant_email`
 -- Table structure for table `attendance`
 --
 
-CREATE TABLE `attendance` (
-  `attendance_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `attendance` (
+  `attendance_id` int(11) NOT NULL AUTO_INCREMENT,
   `attendance_date` varchar(20) NOT NULL,
   `attendance_status` enum('present','absent') NOT NULL DEFAULT 'absent',
   `teacher_id` int(11) NOT NULL,
   `schedule_id` int(11) NOT NULL,
   `assistant_id` int(11) NOT NULL,
   `attendance_day` varchar(10) NOT NULL,
-  `attendance_date_timestap` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `attendance_date_timestap` varchar(50) NOT NULL,
+  `attendance_approve` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`attendance_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
 
 --
 -- Dumping data for table `attendance`
 --
 
-INSERT INTO `attendance` (`attendance_id`, `attendance_date`, `attendance_status`, `teacher_id`, `schedule_id`, `assistant_id`, `attendance_day`, `attendance_date_timestap`) VALUES
-(14, '2016:11:14', 'absent', 3, 11, 13, 'Sun', '1479007014'),
-(15, '2016:11:14', 'absent', 3, 10, 13, 'Sun', '1479007048'),
-(16, '2016:11:14', 'present', 4, 14, 13, 'Sun', '1479007816');
+INSERT INTO `attendance` (`attendance_id`, `attendance_date`, `attendance_status`, `teacher_id`, `schedule_id`, `assistant_id`, `attendance_day`, `attendance_date_timestap`, `attendance_approve`) VALUES
+(14, '2016:11:14', 'absent', 3, 11, 13, 'Sun', '1479007014', 0),
+(15, '2016:11:14', 'absent', 3, 10, 13, 'Sun', '1479007048', 0),
+(16, '2016:11:14', 'present', 4, 14, 13, 'Sun', '1479007816', 0),
+(17, '2017:01:03', 'present', 3, 10, 13, 'Tue', '1483444544', 1),
+(18, '2017:01:03', 'present', 4, 14, 13, 'Tue', '1483444547', 0);
 
 -- --------------------------------------------------------
 
@@ -102,12 +109,13 @@ INSERT INTO `attendance` (`attendance_id`, `attendance_date`, `attendance_status
 -- Table structure for table `course`
 --
 
-CREATE TABLE `course` (
-  `course_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `course` (
+  `course_id` int(11) NOT NULL AUTO_INCREMENT,
   `course_desc` varchar(50) NOT NULL,
   `course_added_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `admin_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `admin_id` int(11) NOT NULL,
+  PRIMARY KEY (`course_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `course`
@@ -123,11 +131,12 @@ INSERT INTO `course` (`course_id`, `course_desc`, `course_added_time`, `admin_id
 -- Table structure for table `hash_key`
 --
 
-CREATE TABLE `hash_key` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `hash_key` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `hash_key_value` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `hash_key_value` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -135,8 +144,8 @@ CREATE TABLE `hash_key` (
 -- Table structure for table `schedule`
 --
 
-CREATE TABLE `schedule` (
-  `schedule_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `schedule` (
+  `schedule_id` int(11) NOT NULL AUTO_INCREMENT,
   `schedule_start_time` time NOT NULL,
   `schedule_end_time` time NOT NULL,
   `schedule_day_monday` tinyint(1) NOT NULL DEFAULT '0',
@@ -153,8 +162,9 @@ CREATE TABLE `schedule` (
   `subject_id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
   `schedule_sy` varchar(10) NOT NULL,
-  `schedule_semester` enum('1','2','3') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `schedule_semester` enum('1','2','3') NOT NULL,
+  PRIMARY KEY (`schedule_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=20 ;
 
 --
 -- Dumping data for table `schedule`
@@ -177,14 +187,16 @@ INSERT INTO `schedule` (`schedule_id`, `schedule_start_time`, `schedule_end_time
 -- Table structure for table `subject`
 --
 
-CREATE TABLE `subject` (
-  `subject_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `subject` (
+  `subject_id` int(11) NOT NULL AUTO_INCREMENT,
   `subject_code` varchar(10) NOT NULL,
   `subject_desc` varchar(100) NOT NULL,
   `subject_unit` int(11) NOT NULL,
   `subject_added_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
-  `admin_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `admin_id` int(11) NOT NULL,
+  PRIMARY KEY (`subject_id`),
+  UNIQUE KEY `subject_code` (`subject_code`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
 
 --
 -- Dumping data for table `subject`
@@ -204,123 +216,28 @@ INSERT INTO `subject` (`subject_id`, `subject_code`, `subject_desc`, `subject_un
 -- Table structure for table `teacher`
 --
 
-CREATE TABLE `teacher` (
-  `teacher_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `teacher` (
+  `teacher_id` int(11) NOT NULL AUTO_INCREMENT,
   `teacher_fullname` varchar(50) NOT NULL,
   `teacher_added_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
   `admin_id` int(11) NOT NULL,
   `teacher_email` varchar(100) NOT NULL,
-  `teacher_school_id` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `teacher_school_id` varchar(10) NOT NULL,
+  `teacher_device` varchar(20) NOT NULL,
+  PRIMARY KEY (`teacher_id`),
+  UNIQUE KEY `teacher_username` (`teacher_email`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `teacher`
 --
 
-INSERT INTO `teacher` (`teacher_id`, `teacher_fullname`, `teacher_added_time`, `admin_id`, `teacher_email`, `teacher_school_id`) VALUES
-(3, 'test fetcher', '2016-11-12 06:52:16', 1, 'emorickfighter@gmail.com', '1234-1233'),
-(4, 'my teacher', '0000-00-00 00:00:00', 1, 'w@w.w', '1223-1223'),
-(5, 'makoko full', '0000-00-00 00:00:00', 1, 'makoo@qq.q', '2344-1234');
+INSERT INTO `teacher` (`teacher_id`, `teacher_fullname`, `teacher_added_time`, `admin_id`, `teacher_email`, `teacher_school_id`, `teacher_device`) VALUES
+(3, 'test fetcher', '2017-01-03 11:42:18', 1, 'emorickfighter@gmail.com', '1234-1233', 'test device'),
+(4, 'my teacher', '0000-00-00 00:00:00', 1, 'w@w.w', '1223-1223', ''),
+(5, 'makoko full', '0000-00-00 00:00:00', 1, 'makoo@qq.q', '2344-1234', ''),
+(6, 'aaaaaaaa', '0000-00-00 00:00:00', 1, 'a@a.a', '1111-1111', 'deevice');
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `admin`
---
-ALTER TABLE `admin`
-  ADD PRIMARY KEY (`admin_id`);
-
---
--- Indexes for table `assistant`
---
-ALTER TABLE `assistant`
-  ADD PRIMARY KEY (`assistant_id`),
-  ADD UNIQUE KEY `assistant_email` (`assistant_email`);
-
---
--- Indexes for table `attendance`
---
-ALTER TABLE `attendance`
-  ADD PRIMARY KEY (`attendance_id`);
-
---
--- Indexes for table `course`
---
-ALTER TABLE `course`
-  ADD PRIMARY KEY (`course_id`);
-
---
--- Indexes for table `hash_key`
---
-ALTER TABLE `hash_key`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `schedule`
---
-ALTER TABLE `schedule`
-  ADD PRIMARY KEY (`schedule_id`);
-
---
--- Indexes for table `subject`
---
-ALTER TABLE `subject`
-  ADD PRIMARY KEY (`subject_id`),
-  ADD UNIQUE KEY `subject_code` (`subject_code`);
-
---
--- Indexes for table `teacher`
---
-ALTER TABLE `teacher`
-  ADD PRIMARY KEY (`teacher_id`),
-  ADD UNIQUE KEY `teacher_username` (`teacher_email`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `admin`
---
-ALTER TABLE `admin`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `assistant`
---
-ALTER TABLE `assistant`
-  MODIFY `assistant_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
---
--- AUTO_INCREMENT for table `attendance`
---
-ALTER TABLE `attendance`
-  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
---
--- AUTO_INCREMENT for table `course`
---
-ALTER TABLE `course`
-  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT for table `hash_key`
---
-ALTER TABLE `hash_key`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `schedule`
---
-ALTER TABLE `schedule`
-  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
---
--- AUTO_INCREMENT for table `subject`
---
-ALTER TABLE `subject`
-  MODIFY `subject_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
---
--- AUTO_INCREMENT for table `teacher`
---
-ALTER TABLE `teacher`
-  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

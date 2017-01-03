@@ -16,6 +16,7 @@ class Teacher_Model extends MY_Model {
             'teacher_fullname' => $this->input->post('fullname'),
             'teacher_school_id' => $this->input->post('schoolid'),
             'teacher_email' => $this->input->post('email'),
+            'teacher_device' => $this->input->post('device'),
             'admin_id' => $this->session->userdata('admin_id'),
         );
         $this->db->insert(self::DB_TABLE, $data);
@@ -44,6 +45,7 @@ class Teacher_Model extends MY_Model {
                 $tmp["fullname"] = $row->teacher_fullname;
                 $tmp["id"] = $row->teacher_school_id;
                 $tmp["email"] = $row->teacher_email;
+                $tmp["device"] = $row->teacher_device;
                 $tmp["option"] = anchor(base_url() . 'teachers/viewreport/' . $row->teacher_id, 'report') . ' | ' .
                         anchor(base_url() . 'teachers/update/' . $row->teacher_id, 'update') . ' | ' .
                         anchor(base_url() . 'teachers/scheduletoday/' . $row->teacher_id, 'today schedule');
@@ -79,7 +81,8 @@ class Teacher_Model extends MY_Model {
                             'id' => $v->teacher_id,
                             'fullname' => $v->teacher_fullname,
                             'email' => $v->teacher_email,
-                            'schoolid' => $v->teacher_school_id
+                            'schoolid' => $v->teacher_school_id,
+                            'device' => $v->teacher_device
                 );
             }
             return $data_array;
@@ -102,6 +105,12 @@ class Teacher_Model extends MY_Model {
                 'email', 'Email', 'required|is_unique[assistant.assistant_email]|valid_email|is_unique[teacher.teacher_email]', array(
             'required' => 'You have not provided %s.',
             'is_unique' => 'This %s already exists.',
+                )
+        );
+        //device
+        $this->form_validation->set_rules(
+                'device', 'Deice', 'required', array(
+            'required' => 'You have not provided %s.',
                 )
         );
         //password
@@ -156,6 +165,11 @@ class Teacher_Model extends MY_Model {
                             'title' => 'Email',
                             'type' => 'text',
                             'value' => $this->form_validation->set_value('email', (!is_null($teacher_object)) ? $teacher_object->email : NULL),
+                        ),
+                        'device' => array(
+                            'title' => 'Device',
+                            'type' => 'text',
+                            'value' => $this->form_validation->set_value('device', (!is_null($teacher_object)) ? $teacher_object->device : NULL),
                         ),
                     )
                 ),

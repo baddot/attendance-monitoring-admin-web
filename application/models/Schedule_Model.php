@@ -13,13 +13,14 @@ class Schedule_Model extends MY_Model {
 
     public function approval() {
         $response = array();
-        $schedule_id = $this->input->post('schedule_id');
+        $attendance_id = $this->input->post('attendance_id');
         $approval = $this->input->post('approval');
-
+        $this->db->where('attendance_id', $attendance_id);
         $this->db->update('attendance', array(
             'attendance_approve' => ($approval == 'approve') ? TRUE : FALSE
         ));
 
+        // log_message('debug', $this->db->last_query());
         if ($this->db->affected_rows()) {
             $response['error'] = FALSE;
             $response['message'] = 'done!';
@@ -474,6 +475,7 @@ class Schedule_Model extends MY_Model {
                 }
                 if ($ismobile) {
                     $tmp['status'] = $this->status($row->schedule_id);
+                    $tmp['attendance_id'] = $this->get_attendance_id($row->schedule_id);
 
                     $tmp['approve'] = $this->approve($row->schedule_id) ? 'Approved' : 'Not Approve';
                 } else
@@ -494,6 +496,7 @@ class Schedule_Model extends MY_Model {
 
                 $tmp['days'] = $days;
 
+                $tmp['device'] = $row->teacher_device;
                 $tmp['teacher'] = $row->teacher_fullname;
                 $tmp['course'] = $row->course_desc;
                 $tmp['subject_desc'] = $row->subject_desc;
@@ -502,12 +505,31 @@ class Schedule_Model extends MY_Model {
                 $tmp['year'] = $row->schedule_sy;
                 $tmp['unit'] = $row->subject_unit;
 
-            //    if (!$ismobile)
-              //      $tmp['option'] = anchor(base_url(), 'edit');
+
+
+
+
+                //    if (!$ismobile)
+                //      $tmp['option'] = anchor(base_url(), 'edit');
                 array_push($response, $tmp);
             }
         }
         return $response;
+    }
+
+    private function get_attendance_id($schedule_id) {
+        //current date
+        //subject_id
+        $rs = $this->db->select('attendance_id')
+                ->where('attendance_date', my_datetime_format())
+                ->where('schedule_id', $schedule_id)
+                ->get('attendance');
+
+        if ($rs) {
+            return $rs->row()->attendance_id;
+        }
+
+        return 0;
     }
 
     /**

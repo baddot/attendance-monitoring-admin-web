@@ -15,6 +15,7 @@ Class Teachers extends MY_Controller {
             'id' => 'ID',
             'email' => 'Email',
             'fullname' => 'Fullname',
+            'device' => 'Device',
             'option' => 'Option',
         ));
         $this->load->view('bootstrap/footer');
