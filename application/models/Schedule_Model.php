@@ -34,6 +34,7 @@ class Schedule_Model extends MY_Model {
     }
 
     public function total($t_id, $M, $y) {
+        $this->load->library('dtr');
         $this->db->select('*');
         $this->db->where('teacher_id', $t_id);
         $this->db->like('attendance_date', $y . ':' . $M);
@@ -41,10 +42,12 @@ class Schedule_Model extends MY_Model {
 
         $p = 0;
         $a = 0;
+        $hours = 0;
         if ($rs) {
             foreach ($rs->result() as $row) {
                 if ($row->attendance_status == 'present') {
                     $p++;
+                    $hours += $this->total_hours_schedule($row->schedule_id);
                 } else if ($row->attendance_status == 'absent') {
                     $a++;
                 }
@@ -52,7 +55,18 @@ class Schedule_Model extends MY_Model {
         }
         $tmp['absent'] = $a;
         $tmp['present'] = $p;
+        $tmp['hours'] = $hours;
         return $tmp;
+    }
+
+    private function total_hours_schedule($schedule_id) {
+        $rs = $this->db->select('*')->where('schedule_id', $schedule_id)->get('schedule');
+
+        if ($rs) {
+            $row = $rs->row();
+            return $this->dtr->total($row->schedule_start_time, $row->schedule_end_time);
+        }
+        return 0;
     }
 
     public function report_table($t_id, $M, $y) {

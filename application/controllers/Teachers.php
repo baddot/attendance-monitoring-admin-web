@@ -123,6 +123,7 @@ Class Teachers extends MY_Controller {
         $this->load->helper('day');
         $days = working_weekdays_in_month($M, $y);
         $data['totalabsent'] = $tot['absent'];
+        $data['totalduty'] = $tot['hours'];
         $this->load->view('total', $data);
         //   $this->export();
     }
@@ -154,7 +155,10 @@ Class Teachers extends MY_Controller {
         $teacher_row = $this->db->select('*')->where('teacher_id', $t_id)->get('teacher')->row();
         $this->load->helper('month');
         $this->excel->filename = str_replace(' ', '_', $teacher_row->teacher_fullname . ' ' . my_month_array($M) . ' ' . $y) . '_attendance';
-        $this->excel->title_inside = array($teacher_row->teacher_school_id, $teacher_row->teacher_fullname, $teacher_row->teacher_email, my_month_array($M) . ' ' . $y);
+
+        $tot = $this->Schedule_Model->total($t_id, $M, $y);
+
+        $this->excel->title_inside = array($teacher_row->teacher_school_id, $teacher_row->teacher_fullname, $teacher_row->teacher_email, my_month_array($M) . ' ' . $y, 'Total Duty Hours: ' . $tot['hours']);
         $this->excel->make_from_array($titles, $arraaaay);
     }
 
