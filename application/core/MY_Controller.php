@@ -120,7 +120,7 @@ class MY_Controller extends CI_Controller {
             ),
             'download' =>
             array(
-                'label' => 'Download APK ver 2.0.6',
+                'label' => 'Download APK ver 2.2.1',
                 'desc' => 'Download Description',
                 'icon' => 'download',
             ),
