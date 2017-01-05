@@ -5,7 +5,9 @@
         <group>
             <file>file:/opt/lampp/htdocs/attendance-monitoring-admin-web/application/controllers/Teachers.php</file>
             <file>file:/opt/lampp/htdocs/attendance-monitoring-admin-web/application/libraries/Dtr.php</file>
+            <file>file:/opt/lampp/htdocs/attendance-monitoring-admin-web/application/core/MY_Controller.php</file>
             <file>file:/opt/lampp/htdocs/attendance-monitoring-admin-web/application/models/Schedule_Model.php</file>
+            <file>file:/opt/lampp/htdocs/attendance-monitoring-admin-web/appcred.txt</file>
             <file>file:/opt/lampp/htdocs/attendance-monitoring-admin-web/application/views/total.php</file>
         </group>
     </open-files>
