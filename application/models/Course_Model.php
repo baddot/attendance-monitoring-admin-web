@@ -28,7 +28,7 @@ class Course_Model extends MY_Model {
         return $data;
     }
 
-    public function add() {
+    public function form() {
         $this->load->helper('form');
         $this->load->library('form_validation');
 

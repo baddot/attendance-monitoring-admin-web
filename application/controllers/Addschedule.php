@@ -18,13 +18,13 @@ class Addschedule extends MY_Controller {
     public function check_day() {
         $this->form_validation->set_message('check_day', '{field} required.');
         $days = '';
-        $days.=((($this->input->post('monday') == 'monday') ? 1 : 0) ? 'M' : '');
-        $days.=((($this->input->post('tuesday') == 'tuesday') ? 1 : 0) ? 'T' : '');
-        $days.=((($this->input->post('wednesday') == 'wednesday') ? 1 : 0) ? 'W' : '');
-        $days.=((($this->input->post('thursday') == 'thursday') ? 1 : 0) ? 'TH' : '');
-        $days.=((($this->input->post('friday') == 'friday') ? 1 : 0) ? 'F' : '');
-        $days.=((($this->input->post('saturday') == 'saturday') ? 1 : 0) ? 'Sat' : '');
-        $days.=((($this->input->post('sunday') == 'sunday') ? 1 : 0) ? 'Sun' : '');
+        $days .= ((($this->input->post('monday') == 'monday') ? 1 : 0) ? 'M' : '');
+        $days .= ((($this->input->post('tuesday') == 'tuesday') ? 1 : 0) ? 'T' : '');
+        $days .= ((($this->input->post('wednesday') == 'wednesday') ? 1 : 0) ? 'W' : '');
+        $days .= ((($this->input->post('thursday') == 'thursday') ? 1 : 0) ? 'TH' : '');
+        $days .= ((($this->input->post('friday') == 'friday') ? 1 : 0) ? 'F' : '');
+        $days .= ((($this->input->post('saturday') == 'saturday') ? 1 : 0) ? 'Sat' : '');
+        $days .= ((($this->input->post('sunday') == 'sunday') ? 1 : 0) ? 'Sun' : '');
 
         return strlen($days) > 0;
     }
@@ -47,11 +47,22 @@ class Addschedule extends MY_Controller {
                 ->where('schedule_end_time >= ', $this->input->post('endtime'))
                 ->where('subject_id', $this->input->post('subjectid'))
                 ->where('schedule_sy', $this->input->post('sy'))
+                ->where('schedule_room', $this->input->post('room'))
+                ->where('teacher_id', $this->input->post('teacherid'))
+                ->where('course_id', $this->input->post('courseid'))
+                ->where('schedule_semester', $this->input->post('semester'))
+                ->where('schedule_day_monday', ($this->input->post('monday') == 'monday') ? 1 : 0)
+                ->where('schedule_day_tuesday', ($this->input->post('tuesday') == 'tuesday') ? 1 : 0)
+                ->where('schedule_day_wednesday', ($this->input->post('wednesday') == 'wednesday') ? 1 : 0)
+                ->where('schedule_day_thursday', ($this->input->post('thursday') == 'thursday') ? 1 : 0)
+                ->where('schedule_day_friday', ($this->input->post('friday') == 'friday') ? 1 : 0)
+                ->where('schedule_day_saturday', ($this->input->post('saturday') == 'saturday') ? 1 : 0)
+                ->where('schedule_day_sunday', ($this->input->post('sunday') == 'sunday') ? 1 : 0)
                 ->get('schedule');
         $ids = '';
         if ($rs->num_rows() > 0) {
             foreach ($rs->result() as $row) {
-                $ids.=$row->schedule_id . ':';
+                $ids .= $row->schedule_id . ':';
             }
         }
         $tmp = $rs->num_rows() > 0;
