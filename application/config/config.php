@@ -24,7 +24,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   | a PHP script and you can easily do that on your own.
   |
  */
-$config['base_url'] = 'http://[::1]/attendance-monitoring-admin-web/';
+if (ENVIRONMENT === 'development' || ENVIRONMENT === 'testing') {
+    $config['base_url'] = 'http://[::1]/attendance-monitoring-admin-web/';
+} else if(ENVIRONMENT === 'production'){
+    $config['base_url'] = 'http://attendancemonitoringstii.com/';
+}
 
 /*
   |--------------------------------------------------------------------------
@@ -214,7 +218,11 @@ $config['directory_trigger'] = 'd';
   | your log files will fill up very fast.
   |
  */
-$config['log_threshold'] = array(1);
+if (ENVIRONMENT === 'development' || ENVIRONMENT === 'testing') {
+   $config['log_threshold'] = array(1,2);
+} else if(ENVIRONMENT === 'production'){
+    $config['log_threshold'] = array(1);
+}
 
 /*
   |--------------------------------------------------------------------------
@@ -251,7 +259,11 @@ $config['log_file_extension'] = '';
   | IMPORTANT: This MUST be an integer (no quotes) and you MUST use octal
   |            integer notation (i.e. 0700, 0644, etc.)
  */
-$config['log_file_permissions'] = 0644;
+if (ENVIRONMENT === 'development' || ENVIRONMENT === 'testing') {
+   $config['log_file_permissions'] = 0777;
+} else if(ENVIRONMENT === 'production'){
+    $config['log_file_permissions'] = 0644;
+}
 
 /*
   |--------------------------------------------------------------------------
