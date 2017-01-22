@@ -45,7 +45,7 @@ class Addschedule extends MY_Controller {
                 //time
                 ->where('schedule_start_time <= ', $this->input->post('starttime'))
                 ->where('schedule_end_time >= ', $this->input->post('endtime'))
-                ->where('subject_id', $this->input->post('subjectid'))
+               //->where('subject_id', $this->input->post('subjectid'))
                 ->where('schedule_sy', $this->input->post('sy'))
                 ->where('schedule_room', $this->input->post('room'))
                 ->where('teacher_id', $this->input->post('teacherid'))

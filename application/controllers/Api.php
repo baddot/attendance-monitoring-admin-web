@@ -25,7 +25,7 @@ class Api extends CI_Controller {
         $this->Teacher_Model->signInApplication();
     }
 
-    public function schedules() {
+    public function schedules() {        
         $this->load->model('Schedule_Model');
         $this->load->view('api', array(
             'msg' => json_encode($this->Schedule_Model->getAllSchedulesMobile($this->input->post('email'))),

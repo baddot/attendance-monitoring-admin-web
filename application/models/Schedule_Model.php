@@ -6,6 +6,14 @@ class Schedule_Model extends MY_Model {
 
     const DB_TABLE = 'schedule';
 
+    # 1=january | 2=february | etc..
+    const FIRST_SEMESTER_START = 6; //june
+    const FIRST_SEMESTER_END = 10; //oct
+    const SECOND_SEMESTER_START = 11; //nov
+    const SECOND_SEMESTER_END = 3; //march
+    const SUMMER_SEMESTER_START = 4; //april
+    const SUMMER_SEMESTER_END = 5; //may
+
     function __construct() {
         parent::__construct();
         $this->load->helper(array('day', 'date'));
@@ -20,7 +28,7 @@ class Schedule_Model extends MY_Model {
             'attendance_approve' => ($approval == 'approve') ? TRUE : FALSE
         ));
 
-        // log_message('debug', $this->db->last_query());
+// log_message('debug', $this->db->last_query());
         if ($this->db->affected_rows()) {
             $response['error'] = FALSE;
             $response['message'] = 'done!';
@@ -85,7 +93,7 @@ class Schedule_Model extends MY_Model {
         $days_none = array();
         if ($rs) {
             foreach ($rs->result() as $row) {
-                // $days_present[] = ;
+// $days_present[] = ;
 
                 list($y, $m, $d) = explode(':', $row->attendance_date);
 
@@ -142,11 +150,11 @@ class Schedule_Model extends MY_Model {
         $rs = $this->db->get('attendance');
 
         $days = working_weekdays_in_month($M, $y);
-        // $days_have = array();
+// $days_have = array();
         $attendance = array();
         if ($rs) {
             foreach ($rs->result() as $row) {
-                // $days_present[] = ;
+// $days_present[] = ;
 
                 list($y, $m, $d) = explode(':', $row->attendance_date);
 
@@ -156,27 +164,27 @@ class Schedule_Model extends MY_Model {
                 }
             }
         }
-        // echo print_r($days_have);
-        // echo print_r($attendance);
+// echo print_r($days_have);
+// echo print_r($attendance);
         $report = array();
         foreach ($days as $v) {
             $found = FALSE;
             foreach ($attendance as $v2) {
-                //  list($d, $status) = explode('|', $v2);
+//  list($d, $status) = explode('|', $v2);
                 list($y, $m, $d) = explode(':', $v2->attendance_date);
                 if ($d == $v) {
-                    // $report[] = $v . '|' . $status;
+// $report[] = $v . '|' . $status;
                     $report[] = $v2;
-                    // $found = TRUE;
+// $found = TRUE;
                     break;
                 }
             }
         }
 
-        //  echo print_r($report);
+//  echo print_r($report);
         $response = array();
         $inc = 1;
-        //foreach ($report as $v) {
+//foreach ($report as $v) {
         foreach ($attendance as $v) {
 
             $sched_row = $this->db->select('*')->where('schedule_id', $v->schedule_id)->get('schedule')->row();
@@ -413,6 +421,57 @@ class Schedule_Model extends MY_Model {
         }
     }
 
+    /**
+     * return true if current semester
+     * 
+     * @param $row $row_schedule
+     * @return boolean
+     */
+    private function check_current_semester($row_schedule) {
+        list($current_month__, $current_date__, $curernt_year__) = explode(' ', my_current_datetime_information());
+        log_message('debug', "\$current_month__: [$current_month__] "
+                . "\$current_date__: [$current_date__] \$curernt_year__: [$curernt_year__] ");
+
+        list($year_start, $year_end) = explode('-', $row_schedule->schedule_sy);
+        log_message('debug', "\$year_start: [$year_start] \$year_end: [$year_end] ");
+
+
+        $mon_num = array_search($current_month__, my_month_array());
+        log_message('debug', "\$mon_num: [$mon_num] ");
+
+        if ($year_start == $curernt_year__) {
+            log_message('debug', "=========FIRST_SEMESTER============");
+            if (Schedule_Model::FIRST_SEMESTER_START <= $mon_num ||
+                    Schedule_Model::FIRST_SEMESTER_END >= $mon_num) {
+                log_message('debug', "=========FIRST_SEMESTER_IN============");
+                if ($row_schedule->schedule_semester == 1) {
+                    log_message('debug', "=========FIRST_SEMESTER_IN_TRUE============");
+                    return TRUE;
+                }
+            }
+        } else if ($year_end == $curernt_year__) {
+            log_message('debug', "=========SECOND_SEMESTER============");
+            if (Schedule_Model::SECOND_SEMESTER_START <= $mon_num ||
+                    ( Schedule_Model::SECOND_SEMESTER_END >= $mon_num)) {
+                log_message('debug', "=========SECOND_SEMESTER_IN============");
+                if ($row_schedule->schedule_semester == 2) {
+                    log_message('debug', "=========SECOND_SEMESTER_IN_TRUE============");
+                    return TRUE;
+                }
+            } else if (Schedule_Model::SUMMER_SEMESTER_START <= $mon_num &&
+                    ( Schedule_Model::SUMMER_SEMESTER_END >= $mon_num)) {
+                log_message('debug', "=========SUMMER_SEMESTER_IN============");
+                if ($row_schedule->schedule_semester == 3) {
+                    log_message('debug', "=========SUMMER_SEMESTER_IN_TRUE============");
+                    return TRUE;
+                }
+            }
+        }
+
+
+        return FALSE;
+    }
+
     public function getAllSchedule($ismobile, $ids = NULL, $teacher_email = NULL) {
 
         $response = array();
@@ -421,17 +480,17 @@ class Schedule_Model extends MY_Model {
         $this->db->join('subject', 'schedule.subject_id = subject.subject_id');
         $this->db->join('course', 'schedule.course_id = course.course_id');
         if ($ismobile) {
-            $rs_ = $this->db->query('SELECT DAYOFWEEK(CURDATE()) AS mytime');
-            $row_ = $rs_->row();
-            $int_day_oftheweek = $row_->mytime;
+//$rs_ = $this->db->query('SELECT DAYOFWEEK(CURDATE()) AS mytime');
+//$row_ = $rs_->row();
+//$int_day_oftheweek = $row_->mytime;
             $dw = '0';
-            if (ENVIRONMENT === 'development') {
-                //0 sunday ,1 monday
-                $dw = 0;
-            } else {
-                // $dw = date("w", date('y-m-d')) - 4;
-                $dw = my_day();
-            }
+//            if (ENVIRONMENT === 'development') {
+//                //0 sunday ,1 monday
+//                $dw = 0;
+//            } else {
+// $dw = date("w", date('y-m-d')) - 4;
+            $dw = my_day();
+//  }
             $str = '';
             switch ($dw) {
                 case 'Sun':
@@ -466,13 +525,14 @@ class Schedule_Model extends MY_Model {
             }
         }
         if (isset($teacher_email)) {
-            $this->db->where('teacher.teacher_email', $teacher_email);
+            $this->db->where('teacher.teacher_email', trim($teacher_email));
         }
         $query = $this->db->get(self::DB_TABLE);
 
         if ($query->num_rows() > 0) {
             $inc = 1;
             foreach ($query->result() as $row) {
+
                 $sem = '';
                 switch ($row->schedule_semester) {
                     case 1:
@@ -488,12 +548,16 @@ class Schedule_Model extends MY_Model {
                         break;
                 }
                 if ($ismobile) {
+                    if ($teacher_email) {
+                        $tmp['attendance_id'] = $this->get_attendance_id($row->schedule_id);
+                    }
+                    if (!$this->check_current_semester($row))
+                        continue;
                     $tmp['status'] = $this->status($row->schedule_id);
-                    $tmp['attendance_id'] = $this->get_attendance_id($row->schedule_id);
-
                     $tmp['approve'] = $this->approve($row->schedule_id) ? 'Approved' : 'Not Approve';
-                } else
+                } else {
                     $tmp['inc'] = $inc++;
+                }
                 $tmp['id'] = $row->schedule_id;
                 $tmp['room'] = $row->schedule_room;
                 $tmp['start_time'] = date('h:i a', strtotime($row->schedule_start_time));
@@ -523,8 +587,8 @@ class Schedule_Model extends MY_Model {
 
 
 
-                //    if (!$ismobile)
-                //      $tmp['option'] = anchor(base_url(), 'edit');
+//    if (!$ismobile)
+//      $tmp['option'] = anchor(base_url(), 'edit');
                 array_push($response, $tmp);
             }
         }
@@ -532,8 +596,8 @@ class Schedule_Model extends MY_Model {
     }
 
     private function get_attendance_id($schedule_id) {
-        //current date
-        //subject_id
+//current date
+//subject_id
         $rs = $this->db->select('attendance_id')
                 ->where('attendance_date', my_datetime_format())
                 ->where('schedule_id', $schedule_id)
@@ -601,7 +665,7 @@ class Schedule_Model extends MY_Model {
         $status = $this->input->post('status');
         $assistant_id = $this->input->post('assistant_id');
         if (!is_null($schedule_id) and ! is_null($status)and ! is_null($assistant_id)) {
-            //select teacher_id
+//select teacher_id
 
             $this->db->select('*');
             $this->db->where('schedule_id', $schedule_id);
@@ -645,7 +709,7 @@ class Schedule_Model extends MY_Model {
         $this->db->where('schedule_id', $data['schedule_id']);
         $this->db->where('attendance_date', $data['attendance_date']);
         $rs = $this->db->get('attendance');
-        // return $this->db->affected_rows();
+// return $this->db->affected_rows();
         return $rs->row();
     }
 
