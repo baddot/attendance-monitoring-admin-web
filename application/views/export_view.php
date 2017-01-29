@@ -5,7 +5,7 @@
             <div class="panel-heading">Export</div>
             <div class="panel-body">
                 <?php echo validation_errors(); ?>
-                <?php echo form_open(base_url('teachers/export/' . $t_id), array('role'=>"form",'method'=>'get')); ?>
+                <?php echo form_open(base_url('teachers/export/' . $t_id), array('role' => "form", 'method' => 'get')); ?>
 
 
 
@@ -24,7 +24,7 @@
                         ));
                         ?>
                     </div>
-                    <?php echo form_hidden('t_id',$t_id) ?>
+                    <?php echo form_hidden('t_id', $t_id) ?>
                     <div class="form-group"><?php
                         echo form_submit('btn2', 'Export Excel Report', array(
                             'class' => 'btn btn-primary'

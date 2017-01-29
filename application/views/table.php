@@ -8,9 +8,9 @@
                     <thead>
                         <tr>
                             <?php foreach ($columns as $key => $col): ?>
-                                <th data-field="<?php echo $key; ?>" data-sortable="true" >
-                                    <?php echo $col; ?>
-                                </th>
+                                    <th data-field="<?php echo $key; ?>" data-sortable="true" >
+                                        <?php echo $col; ?>
+                                    </th>
                             <?php endforeach; ?>
                         </tr>
                     </thead>

@@ -34,21 +34,21 @@ $title = 'Log in | Thesis Attendance Monitoring';
                             <div class="form-group">
                                 <?php
                                 echo form_input(array(
-                                    'name' => 'username',
-                                    'class' => 'form-control',
-                                    'value' => set_value('username'),
+                                    'name'        => 'username',
+                                    'class'       => 'form-control',
+                                    'value'       => set_value('username'),
                                     'placeholder' => "Username",
-                                    'autofocus' => ''
+                                    'autofocus'   => ''
                                 ));
                                 ?>
                             </div>
                             <div class="form-group">
                                 <?php
                                 echo form_password(array(
-                                    'name' => 'password',
-                                    'class' => 'form-control',
+                                    'name'        => 'password',
+                                    'class'       => 'form-control',
                                     'placeholder' => "Password",
-                                    'autofocus' => ''
+                                    'autofocus'   => ''
                                 ));
                                 ?>
                             </div>
@@ -85,21 +85,21 @@ $title = 'Log in | Thesis Attendance Monitoring';
         <script src="<?php echo base_url(); ?>libs/bootstrap/js/easypiechart-data.js"></script>
         <script src="<?php echo base_url(); ?>libs/bootstrap/js/bootstrap-datepicker.js"></script>
         <script>
-            !function ($) {
-                $(document).on("click", "ul.nav li.parent > a > span.icon", function () {
-                    $(this).find('em:first').toggleClass("glyphicon-minus");
-                });
-                $(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
-            }(window.jQuery);
+                !function ($) {
+                    $(document).on("click", "ul.nav li.parent > a > span.icon", function () {
+                        $(this).find('em:first').toggleClass("glyphicon-minus");
+                    });
+                    $(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+                }(window.jQuery);
 
-            $(window).on('resize', function () {
-                if ($(window).width() > 768)
-                    $('#sidebar-collapse').collapse('show')
-            })
-            $(window).on('resize', function () {
-                if ($(window).width() <= 767)
-                    $('#sidebar-collapse').collapse('hide')
-            })
+                $(window).on('resize', function () {
+                    if ($(window).width() > 768)
+                        $('#sidebar-collapse').collapse('show')
+                })
+                $(window).on('resize', function () {
+                    if ($(window).width() <= 767)
+                        $('#sidebar-collapse').collapse('hide')
+                })
         </script>	
     </body>
 
