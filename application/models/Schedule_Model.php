@@ -8,14 +8,6 @@ class Schedule_Model extends MY_Model
 
         const DB_TABLE = 'schedule';
 
-        # 1=january | 2=february | etc..
-        const FIRST_SEMESTER_START  = 6; //june
-        const FIRST_SEMESTER_END    = 10; //oct
-        const SECOND_SEMESTER_START = 11; //nov
-        const SECOND_SEMESTER_END   = 3; //march
-        const SUMMER_SEMESTER_START = 4; //april
-        const SUMMER_SEMESTER_END   = 5; //may
-
         function __construct()
         {
                 parent::__construct();
@@ -467,6 +459,7 @@ class Schedule_Model extends MY_Model
          */
         private function check_current_semester($row_schedule)
         {
+                $this->load->config('admin/config');
                 list($current_month__, $current_date__, $curernt_year__) = explode(' ', my_current_datetime_information());
                 log_message('debug', "\$current_month__: [$current_month__] "
                         . "\$current_date__: [$current_date__] \$curernt_year__: [$curernt_year__] ");
@@ -481,8 +474,8 @@ class Schedule_Model extends MY_Model
                 if ($year_start == $curernt_year__)
                 {
                         log_message('debug', "=========FIRST_SEMESTER============");
-                        if (Schedule_Model::FIRST_SEMESTER_START <= $mon_num ||
-                                Schedule_Model::FIRST_SEMESTER_END >= $mon_num)
+                        if ($this->config->item('first_semester_start') <= $mon_num ||
+                                $this->config->item('first_semester_end') >= $mon_num)
                         {
                                 log_message('debug', "=========FIRST_SEMESTER_IN============");
                                 if ($row_schedule->schedule_semester == 1)
@@ -495,8 +488,8 @@ class Schedule_Model extends MY_Model
                 else if ($year_end == $curernt_year__)
                 {
                         log_message('debug', "=========SECOND_SEMESTER============");
-                        if (Schedule_Model::SECOND_SEMESTER_START <= $mon_num ||
-                                ( Schedule_Model::SECOND_SEMESTER_END >= $mon_num))
+                        if ($this->config->item('second_semester_start') <= $mon_num ||
+                                ( $this->config->item('second_semester_end') >= $mon_num))
                         {
                                 log_message('debug', "=========SECOND_SEMESTER_IN============");
                                 if ($row_schedule->schedule_semester == 2)
@@ -505,8 +498,8 @@ class Schedule_Model extends MY_Model
                                         return TRUE;
                                 }
                         }
-                        else if (Schedule_Model::SUMMER_SEMESTER_START <= $mon_num &&
-                                ( Schedule_Model::SUMMER_SEMESTER_END >= $mon_num))
+                        else if ($this->config->item('summer_semester_start') <= $mon_num &&
+                                ( $this->config->item('summer_semester_end') >= $mon_num))
                         {
                                 log_message('debug', "=========SUMMER_SEMESTER_IN============");
                                 if ($row_schedule->schedule_semester == 3)
