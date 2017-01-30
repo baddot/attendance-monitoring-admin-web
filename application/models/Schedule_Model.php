@@ -657,7 +657,7 @@ class Schedule_Model extends MY_Model
                         ->where('attendance_date', my_datetime_format())
                         ->where('schedule_id', $schedule_id)
                         ->get('attendance');
-echo $this->db->last_query();
+
                 if ($this->db->affected_rows() > 0)
                 {
                         return $rs->row()->attendance_id;
